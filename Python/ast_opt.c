@@ -263,6 +263,9 @@ fold_binop(expr_ty node, PyArena *arena, _PyASTOptimizeState *state)
     case BitAnd:
         newval = PyNumber_And(lv, rv);
         break;
+    case BitNand:
+        newval = PyNumber_Nand(lv, rv);
+        break;
     default: // Unknown operator
         return 1;
     }

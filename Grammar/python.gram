@@ -111,6 +111,7 @@ augassign[AugOperator*]:
     | '>>=' { _PyPegen_augoperator(p, RShift) }
     | '**=' { _PyPegen_augoperator(p, Pow) }
     | '//=' { _PyPegen_augoperator(p, FloorDiv) }
+    | '!&=' { _PyPegen_augoperator(p, BitNand) }
 
 global_stmt[stmt_ty]: 'global' a[asdl_expr_seq*]=','.NAME+ {
     _Py_Global(CHECK(_PyPegen_map_names_to_ids(p, a)), EXTRA) }
@@ -423,6 +424,9 @@ in_bitwise_or[CmpopExprPair*]: 'in' a=bitwise_or { _PyPegen_cmpop_expr_pair(p, I
 isnot_bitwise_or[CmpopExprPair*]: 'is' 'not' a=bitwise_or { _PyPegen_cmpop_expr_pair(p, IsNot, a) }
 is_bitwise_or[CmpopExprPair*]: 'is' a=bitwise_or { _PyPegen_cmpop_expr_pair(p, Is, a) }
 
+bitwise_nand[expr_ty]:
+    | a=bitwise_nand '!&' b=bitwise_or { _Py_BinOp(a, BitNand, b, EXTRA) }
+    | bitwise_or
 bitwise_or[expr_ty]:
     | a=bitwise_or '|' b=bitwise_xor { _Py_BinOp(a, BitOr, b, EXTRA) }
     | bitwise_xor

@@ -145,6 +145,9 @@ typedef struct {
 
     binaryfunc nb_matrix_multiply;
     binaryfunc nb_inplace_matrix_multiply;
+
+    binaryfunc nb_nand;
+    binaryfunc nb_inplace_nand;
 } PyNumberMethods;
 
 typedef struct {

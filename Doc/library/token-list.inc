@@ -201,6 +201,14 @@
 
    Token value for ``":="``.
 
+.. data:: NAND
+
+   Token value for ``"!&"``.
+
+.. data:: NANDEQUAL
+
+   Token value for ``"!&="``.
+
 .. data:: OP
 
 .. data:: AWAIT

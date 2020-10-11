@@ -25,6 +25,8 @@ typedef struct {
     PyObject *BinOp_type;
     PyObject *BitAnd_singleton;
     PyObject *BitAnd_type;
+    PyObject *BitNand_singleton;
+    PyObject *BitNand_type;
     PyObject *BitOr_singleton;
     PyObject *BitOr_type;
     PyObject *BitXor_singleton;
@@ -270,6 +272,8 @@ void _PyAST_Fini(PyThreadState *tstate)
     Py_CLEAR(state->BinOp_type);
     Py_CLEAR(state->BitAnd_singleton);
     Py_CLEAR(state->BitAnd_type);
+    Py_CLEAR(state->BitNand_singleton);
+    Py_CLEAR(state->BitNand_type);
     Py_CLEAR(state->BitOr_singleton);
     Py_CLEAR(state->BitOr_type);
     Py_CLEAR(state->BitXor_singleton);
@@ -1613,7 +1617,7 @@ static int init_types(astmodulestate *state)
     if (!state->Or_singleton) return 0;
     state->operator_type = make_type(state, "operator", state->AST_type, NULL,
                                      0,
-        "operator = Add | Sub | Mult | MatMult | Div | Mod | Pow | LShift | RShift | BitOr | BitXor | BitAnd | FloorDiv");
+        "operator = Add | Sub | Mult | MatMult | Div | Mod | Pow | LShift | RShift | BitOr | BitXor | BitAnd | FloorDiv | BitNand");
     if (!state->operator_type) return 0;
     if (!add_attributes(state, state->operator_type, NULL, 0)) return 0;
     state->Add_type = make_type(state, "Add", state->operator_type, NULL, 0,
@@ -1706,6 +1710,14 @@ static int init_types(astmodulestate *state)
                                                   *)state->FloorDiv_type, NULL,
                                                   NULL);
     if (!state->FloorDiv_singleton) return 0;
+    state->BitNand_type = make_type(state, "BitNand", state->operator_type,
+                                    NULL, 0,
+        "BitNand");
+    if (!state->BitNand_type) return 0;
+    state->BitNand_singleton = PyType_GenericNew((PyTypeObject
+                                                 *)state->BitNand_type, NULL,
+                                                 NULL);
+    if (!state->BitNand_singleton) return 0;
     state->unaryop_type = make_type(state, "unaryop", state->AST_type, NULL, 0,
         "unaryop = Invert | Not | UAdd | USub");
     if (!state->unaryop_type) return 0;
@@ -4522,6 +4534,9 @@ PyObject* ast2obj_operator(astmodulestate *state, operator_ty o)
         case FloorDiv:
             Py_INCREF(state->FloorDiv_singleton);
             return state->FloorDiv_singleton;
+        case BitNand:
+            Py_INCREF(state->BitNand_singleton);
+            return state->BitNand_singleton;
     }
     Py_UNREACHABLE();
 }
@@ -8733,6 +8748,14 @@ obj2ast_operator(astmodulestate *state, PyObject* obj, operator_ty* out,
         *out = FloorDiv;
         return 0;
     }
+    isinstance = PyObject_IsInstance(obj, state->BitNand_type);
+    if (isinstance == -1) {
+        return 1;
+    }
+    if (isinstance) {
+        *out = BitNand;
+        return 0;
+    }
 
     PyErr_Format(PyExc_TypeError, "expected some sort of operator, but got %R", obj);
     return 1;
@@ -10017,6 +10040,10 @@ astmodule_exec(PyObject *m)
         return -1;
     }
     Py_INCREF(state->FloorDiv_type);
+    if (PyModule_AddObject(m, "BitNand", state->BitNand_type) < 0) {
+        return -1;
+    }
+    Py_INCREF(state->BitNand_type);
     if (PyModule_AddObject(m, "unaryop", state->unaryop_type) < 0) {
         return -1;
     }

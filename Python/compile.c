@@ -941,6 +941,7 @@ stack_effect(int opcode, int oparg, int jump)
         case BINARY_AND:
         case BINARY_XOR:
         case BINARY_OR:
+        case BINARY_NAND:
             return -1;
         case INPLACE_POWER:
             return -1;
@@ -956,6 +957,7 @@ stack_effect(int opcode, int oparg, int jump)
         case INPLACE_AND:
         case INPLACE_XOR:
         case INPLACE_OR:
+        case INPLACE_NAND:
             return -1;
 
         case SETUP_WITH:
@@ -3496,6 +3498,8 @@ binop(operator_ty op)
         return BINARY_AND;
     case FloorDiv:
         return BINARY_FLOOR_DIVIDE;
+    case BitNand:
+        return BINARY_NAND;
     default:
         PyErr_Format(PyExc_SystemError,
             "binary op %d should not be possible", op);
@@ -3533,6 +3537,8 @@ inplace_binop(operator_ty op)
         return INPLACE_AND;
     case FloorDiv:
         return INPLACE_FLOOR_DIVIDE;
+    case BitNand:
+        return INPLACE_NAND;
     default:
         PyErr_Format(PyExc_SystemError,
             "inplace binary op %d should not be possible", op);

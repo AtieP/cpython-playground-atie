@@ -4645,6 +4645,10 @@ long_bitwise(PyLongObject *a,
         for (i = 0; i < size_b; ++i)
             z->ob_digit[i] = a->ob_digit[i] ^ b->ob_digit[i];
         break;
+    case '*':
+        for (i = 0; i < size_b; ++i)
+            z->ob_digit[i] = ~(a->ob_digit[i] & b->ob_digit[i]) + 1;
+        break; 
     default:
         Py_UNREACHABLE();
     }
@@ -4693,6 +4697,15 @@ long_or(PyObject *a, PyObject *b)
     PyObject *c;
     CHECK_BINOP(a, b);
     c = long_bitwise((PyLongObject*)a, '|', (PyLongObject*)b);
+    return c;
+}
+
+static PyObject *
+long_nand(PyObject *a, PyObject *b)
+{
+    PyObject *c;
+    CHECK_BINOP(a, b);
+    c = long_bitwise((PyLongObject*)a, '*', (PyLongObject*)b);
     return c;
 }
 
@@ -5624,6 +5637,8 @@ static PyNumberMethods long_as_number = {
     0,                          /* nb_inplace_floor_divide */
     0,                          /* nb_inplace_true_divide */
     long_long,                  /* nb_index */
+    long_nand,                   /* nb_nand */
+    0                           /* nb_inplace_nand */
 };
 
 PyTypeObject PyLong_Type = {

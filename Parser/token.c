@@ -60,6 +60,8 @@ const char * const _PyParser_TokenNames[] = {
     "RARROW",
     "ELLIPSIS",
     "COLONEQUAL",
+    "NAND",
+    "NANDEQUAL",
     "OP",
     "AWAIT",
     "ASYNC",
@@ -111,6 +113,7 @@ PyToken_TwoChars(int c1, int c2)
     switch (c1) {
     case '!':
         switch (c2) {
+        case '&': return NAND;
         case '=': return NOTEQUAL;
         }
         break;
@@ -193,6 +196,15 @@ int
 PyToken_ThreeChars(int c1, int c2, int c3)
 {
     switch (c1) {
+    case '!':
+        switch (c2) {
+        case '&':
+            switch (c3) {
+            case '=': return NANDEQUAL;
+            }
+            break;
+        }
+        break;
     case '*':
         switch (c2) {
         case '*':

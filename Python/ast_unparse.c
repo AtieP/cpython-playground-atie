@@ -111,6 +111,7 @@ enum {
     PR_POWER,           /* '**' */
     PR_AWAIT,           /* 'await' */
     PR_ATOM,
+    PR_NAND
 };
 
 static int
@@ -156,6 +157,7 @@ append_ast_binop(_PyUnicodeWriter *writer, expr_ty e, int level)
     case BitAnd: op = " & "; pr = PR_BAND; break;
     case FloorDiv: op = " // "; pr = PR_TERM; break;
     case Pow: op = " ** "; pr = PR_POWER; rassoc = true; break;
+    case BitNand: op = " !& "; pr = PR_NAND; break;
     default:
         PyErr_SetString(PyExc_SystemError,
                         "unknown binary operator");

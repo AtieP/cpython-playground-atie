@@ -543,6 +543,12 @@ PyAPI_FUNC(PyObject *) PyNumber_InPlaceRemainder(PyObject *o1, PyObject *o2);
 PyAPI_FUNC(PyObject *) PyNumber_InPlacePower(PyObject *o1, PyObject *o2,
                                              PyObject *o3);
 
+/* Returns the negative and, or NULL on failure. */
+PyAPI_FUNC(PyObject *) PyNumber_Nand(PyObject *o1, PyObject *o2);
+
+/* Returns in-place result of negative and, or NULL on failute. */
+PyAPI_FUNC(PyObject *) PyNumber_InPlaceNand(PyObject *o1, PyObject *o2);
+
 /* Returns the result of left shifting o1 by o2, possibly in-place, or NULL
    on failure.
 

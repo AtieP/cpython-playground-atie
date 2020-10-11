@@ -1780,6 +1780,18 @@ main_loop:
             DISPATCH();
         }
 
+        case TARGET(BINARY_NAND): {
+            PyObject *right = POP();
+            PyObject *left = TOP();
+            PyObject *res = PyNumber_Nand(left, right);
+            Py_DECREF(left);
+            Py_DECREF(right);
+            SET_TOP(res);
+            if (res == NULL)
+                goto error;
+            DISPATCH();
+        }
+
         case TARGET(BINARY_XOR): {
             PyObject *right = POP();
             PyObject *left = TOP();
@@ -1959,6 +1971,18 @@ main_loop:
             PyObject *right = POP();
             PyObject *left = TOP();
             PyObject *res = PyNumber_InPlaceAnd(left, right);
+            Py_DECREF(left);
+            Py_DECREF(right);
+            SET_TOP(res);
+            if (res == NULL)
+                goto error;
+            DISPATCH();
+        }
+
+        case TARGET(INPLACE_NAND): {
+            PyObject *right = POP();
+            PyObject *left = TOP();
+            PyObject *res = PyNumber_InPlaceNand(left, right);
             Py_DECREF(left);
             Py_DECREF(right);
             SET_TOP(res);
