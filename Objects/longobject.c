@@ -4647,7 +4647,7 @@ long_bitwise(PyLongObject *a,
         break;
     case '*':
         for (i = 0; i < size_b; ++i)
-            z->ob_digit[i] = ~(a->ob_digit[i] & b->ob_digit[i]) + 1;
+            z->ob_digit[i] = ~(a->ob_digit[i] & b->ob_digit[i]);
         break; 
     default:
         Py_UNREACHABLE();
