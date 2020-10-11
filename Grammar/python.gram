@@ -424,11 +424,11 @@ in_bitwise_or[CmpopExprPair*]: 'in' a=bitwise_or { _PyPegen_cmpop_expr_pair(p, I
 isnot_bitwise_or[CmpopExprPair*]: 'is' 'not' a=bitwise_or { _PyPegen_cmpop_expr_pair(p, IsNot, a) }
 is_bitwise_or[CmpopExprPair*]: 'is' a=bitwise_or { _PyPegen_cmpop_expr_pair(p, Is, a) }
 
-bitwise_nand[expr_ty]:
-    | a=bitwise_nand '!&' b=bitwise_or { _Py_BinOp(a, BitNand, b, EXTRA) }
-    | bitwise_or
 bitwise_or[expr_ty]:
-    | a=bitwise_or '|' b=bitwise_xor { _Py_BinOp(a, BitOr, b, EXTRA) }
+    | a=bitwise_or '|' b=bitwise_nand { _Py_BinOp(a, BitOr, b, EXTRA) }
+    | bitwise_nand
+bitwise_nand[expr_ty]:
+    | a=bitwise_nand '!&' b=bitwise_xor { _Py_BinOp(a, BitNand, b, EXTRA) }
     | bitwise_xor
 bitwise_xor[expr_ty]:
     | a=bitwise_xor '^' b=bitwise_and { _Py_BinOp(a, BitXor, b, EXTRA) }

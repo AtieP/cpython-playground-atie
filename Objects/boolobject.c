@@ -105,6 +105,14 @@ bool_xor(PyObject *a, PyObject *b)
     return PyBool_FromLong((a == Py_True) ^ (b == Py_True));
 }
 
+static PyObject *
+bool_nand(PyObject *a, PyObject *b)
+{
+    if (!PyBool_Check(a) || !PyBool_Check(b))
+        return PyLong_Type.tp_as_number->nb_nand(a, b);
+    return PyBool_FromLong(~((a == Py_True) & (b == Py_True)) + 1);
+}
+
 /* Doc string */
 
 PyDoc_STRVAR(bool_doc,
@@ -151,6 +159,10 @@ static PyNumberMethods bool_as_number = {
     0,                          /* nb_inplace_floor_divide */
     0,                          /* nb_inplace_true_divide */
     0,                          /* nb_index */
+    0,                          /* nb_matrix_multiply */
+    0,                          /* nb_inplace_matrix_multiply */
+    bool_nand,                  /* nb_nand */
+    0                           /* nb_inplace_nand */
 };
 
 /* The type object for bool.  Note that this cannot be subclassed! */

@@ -160,8 +160,8 @@ static KeywordToken *reserved_keywords[] = {
 #define in_bitwise_or_type 1091
 #define isnot_bitwise_or_type 1092
 #define is_bitwise_or_type 1093
-#define bitwise_nand_type 1094  // Left-recursive
-#define bitwise_or_type 1095  // Left-recursive
+#define bitwise_or_type 1094  // Left-recursive
+#define bitwise_nand_type 1095  // Left-recursive
 #define bitwise_xor_type 1096  // Left-recursive
 #define bitwise_and_type 1097  // Left-recursive
 #define shift_expr_type 1098  // Left-recursive
@@ -479,8 +479,8 @@ static CmpopExprPair* notin_bitwise_or_rule(Parser *p);
 static CmpopExprPair* in_bitwise_or_rule(Parser *p);
 static CmpopExprPair* isnot_bitwise_or_rule(Parser *p);
 static CmpopExprPair* is_bitwise_or_rule(Parser *p);
-static expr_ty bitwise_nand_rule(Parser *p);
 static expr_ty bitwise_or_rule(Parser *p);
+static expr_ty bitwise_nand_rule(Parser *p);
 static expr_ty bitwise_xor_rule(Parser *p);
 static expr_ty bitwise_and_rule(Parser *p);
 static expr_ty shift_expr_rule(Parser *p);
@@ -9049,121 +9049,7 @@ is_bitwise_or_rule(Parser *p)
 }
 
 // Left-recursive
-// bitwise_nand: bitwise_nand '!&' bitwise_or | bitwise_or
-static expr_ty bitwise_nand_raw(Parser *);
-static expr_ty
-bitwise_nand_rule(Parser *p)
-{
-    D(p->level++);
-    expr_ty _res = NULL;
-    if (_PyPegen_is_memoized(p, bitwise_nand_type, &_res)) {
-        D(p->level--);
-        return _res;
-    }
-    int _mark = p->mark;
-    int _resmark = p->mark;
-    while (1) {
-        int tmpvar_1 = _PyPegen_update_memo(p, _mark, bitwise_nand_type, _res);
-        if (tmpvar_1) {
-            D(p->level--);
-            return _res;
-        }
-        p->mark = _mark;
-        void *_raw = bitwise_nand_raw(p);
-        if (_raw == NULL || p->mark <= _resmark)
-            break;
-        _resmark = p->mark;
-        _res = _raw;
-    }
-    p->mark = _resmark;
-    D(p->level--);
-    return _res;
-}
-static expr_ty
-bitwise_nand_raw(Parser *p)
-{
-    D(p->level++);
-    if (p->error_indicator) {
-        D(p->level--);
-        return NULL;
-    }
-    expr_ty _res = NULL;
-    int _mark = p->mark;
-    if (p->mark == p->fill && _PyPegen_fill_token(p) < 0) {
-        p->error_indicator = 1;
-        D(p->level--);
-        return NULL;
-    }
-    int _start_lineno = p->tokens[_mark]->lineno;
-    UNUSED(_start_lineno); // Only used by EXTRA macro
-    int _start_col_offset = p->tokens[_mark]->col_offset;
-    UNUSED(_start_col_offset); // Only used by EXTRA macro
-    { // bitwise_nand '!&' bitwise_or
-        if (p->error_indicator) {
-            D(p->level--);
-            return NULL;
-        }
-        D(fprintf(stderr, "%*c> bitwise_nand[%d-%d]: %s\n", p->level, ' ', _mark, p->mark, "bitwise_nand '!&' bitwise_or"));
-        Token * _literal;
-        expr_ty a;
-        expr_ty b;
-        if (
-            (a = bitwise_nand_rule(p))  // bitwise_nand
-            &&
-            (_literal = _PyPegen_expect_token(p, 54))  // token='!&'
-            &&
-            (b = bitwise_or_rule(p))  // bitwise_or
-        )
-        {
-            D(fprintf(stderr, "%*c+ bitwise_nand[%d-%d]: %s succeeded!\n", p->level, ' ', _mark, p->mark, "bitwise_nand '!&' bitwise_or"));
-            Token *_token = _PyPegen_get_last_nonnwhitespace_token(p);
-            if (_token == NULL) {
-                D(p->level--);
-                return NULL;
-            }
-            int _end_lineno = _token->end_lineno;
-            UNUSED(_end_lineno); // Only used by EXTRA macro
-            int _end_col_offset = _token->end_col_offset;
-            UNUSED(_end_col_offset); // Only used by EXTRA macro
-            _res = _Py_BinOp ( a , BitNand , b , EXTRA );
-            if (_res == NULL && PyErr_Occurred()) {
-                p->error_indicator = 1;
-                D(p->level--);
-                return NULL;
-            }
-            goto done;
-        }
-        p->mark = _mark;
-        D(fprintf(stderr, "%*c%s bitwise_nand[%d-%d]: %s failed!\n", p->level, ' ',
-                  p->error_indicator ? "ERROR!" : "-", _mark, p->mark, "bitwise_nand '!&' bitwise_or"));
-    }
-    { // bitwise_or
-        if (p->error_indicator) {
-            D(p->level--);
-            return NULL;
-        }
-        D(fprintf(stderr, "%*c> bitwise_nand[%d-%d]: %s\n", p->level, ' ', _mark, p->mark, "bitwise_or"));
-        expr_ty bitwise_or_var;
-        if (
-            (bitwise_or_var = bitwise_or_rule(p))  // bitwise_or
-        )
-        {
-            D(fprintf(stderr, "%*c+ bitwise_nand[%d-%d]: %s succeeded!\n", p->level, ' ', _mark, p->mark, "bitwise_or"));
-            _res = bitwise_or_var;
-            goto done;
-        }
-        p->mark = _mark;
-        D(fprintf(stderr, "%*c%s bitwise_nand[%d-%d]: %s failed!\n", p->level, ' ',
-                  p->error_indicator ? "ERROR!" : "-", _mark, p->mark, "bitwise_or"));
-    }
-    _res = NULL;
-  done:
-    D(p->level--);
-    return _res;
-}
-
-// Left-recursive
-// bitwise_or: bitwise_or '|' bitwise_xor | bitwise_xor
+// bitwise_or: bitwise_or '|' bitwise_nand | bitwise_nand
 static expr_ty bitwise_or_raw(Parser *);
 static expr_ty
 bitwise_or_rule(Parser *p)
@@ -9177,8 +9063,8 @@ bitwise_or_rule(Parser *p)
     int _mark = p->mark;
     int _resmark = p->mark;
     while (1) {
-        int tmpvar_2 = _PyPegen_update_memo(p, _mark, bitwise_or_type, _res);
-        if (tmpvar_2) {
+        int tmpvar_1 = _PyPegen_update_memo(p, _mark, bitwise_or_type, _res);
+        if (tmpvar_1) {
             D(p->level--);
             return _res;
         }
@@ -9212,12 +9098,12 @@ bitwise_or_raw(Parser *p)
     UNUSED(_start_lineno); // Only used by EXTRA macro
     int _start_col_offset = p->tokens[_mark]->col_offset;
     UNUSED(_start_col_offset); // Only used by EXTRA macro
-    { // bitwise_or '|' bitwise_xor
+    { // bitwise_or '|' bitwise_nand
         if (p->error_indicator) {
             D(p->level--);
             return NULL;
         }
-        D(fprintf(stderr, "%*c> bitwise_or[%d-%d]: %s\n", p->level, ' ', _mark, p->mark, "bitwise_or '|' bitwise_xor"));
+        D(fprintf(stderr, "%*c> bitwise_or[%d-%d]: %s\n", p->level, ' ', _mark, p->mark, "bitwise_or '|' bitwise_nand"));
         Token * _literal;
         expr_ty a;
         expr_ty b;
@@ -9226,10 +9112,10 @@ bitwise_or_raw(Parser *p)
             &&
             (_literal = _PyPegen_expect_token(p, 18))  // token='|'
             &&
-            (b = bitwise_xor_rule(p))  // bitwise_xor
+            (b = bitwise_nand_rule(p))  // bitwise_nand
         )
         {
-            D(fprintf(stderr, "%*c+ bitwise_or[%d-%d]: %s succeeded!\n", p->level, ' ', _mark, p->mark, "bitwise_or '|' bitwise_xor"));
+            D(fprintf(stderr, "%*c+ bitwise_or[%d-%d]: %s succeeded!\n", p->level, ' ', _mark, p->mark, "bitwise_or '|' bitwise_nand"));
             Token *_token = _PyPegen_get_last_nonnwhitespace_token(p);
             if (_token == NULL) {
                 D(p->level--);
@@ -9249,25 +9135,139 @@ bitwise_or_raw(Parser *p)
         }
         p->mark = _mark;
         D(fprintf(stderr, "%*c%s bitwise_or[%d-%d]: %s failed!\n", p->level, ' ',
-                  p->error_indicator ? "ERROR!" : "-", _mark, p->mark, "bitwise_or '|' bitwise_xor"));
+                  p->error_indicator ? "ERROR!" : "-", _mark, p->mark, "bitwise_or '|' bitwise_nand"));
+    }
+    { // bitwise_nand
+        if (p->error_indicator) {
+            D(p->level--);
+            return NULL;
+        }
+        D(fprintf(stderr, "%*c> bitwise_or[%d-%d]: %s\n", p->level, ' ', _mark, p->mark, "bitwise_nand"));
+        expr_ty bitwise_nand_var;
+        if (
+            (bitwise_nand_var = bitwise_nand_rule(p))  // bitwise_nand
+        )
+        {
+            D(fprintf(stderr, "%*c+ bitwise_or[%d-%d]: %s succeeded!\n", p->level, ' ', _mark, p->mark, "bitwise_nand"));
+            _res = bitwise_nand_var;
+            goto done;
+        }
+        p->mark = _mark;
+        D(fprintf(stderr, "%*c%s bitwise_or[%d-%d]: %s failed!\n", p->level, ' ',
+                  p->error_indicator ? "ERROR!" : "-", _mark, p->mark, "bitwise_nand"));
+    }
+    _res = NULL;
+  done:
+    D(p->level--);
+    return _res;
+}
+
+// Left-recursive
+// bitwise_nand: bitwise_nand '!&' bitwise_xor | bitwise_xor
+static expr_ty bitwise_nand_raw(Parser *);
+static expr_ty
+bitwise_nand_rule(Parser *p)
+{
+    D(p->level++);
+    expr_ty _res = NULL;
+    if (_PyPegen_is_memoized(p, bitwise_nand_type, &_res)) {
+        D(p->level--);
+        return _res;
+    }
+    int _mark = p->mark;
+    int _resmark = p->mark;
+    while (1) {
+        int tmpvar_2 = _PyPegen_update_memo(p, _mark, bitwise_nand_type, _res);
+        if (tmpvar_2) {
+            D(p->level--);
+            return _res;
+        }
+        p->mark = _mark;
+        void *_raw = bitwise_nand_raw(p);
+        if (_raw == NULL || p->mark <= _resmark)
+            break;
+        _resmark = p->mark;
+        _res = _raw;
+    }
+    p->mark = _resmark;
+    D(p->level--);
+    return _res;
+}
+static expr_ty
+bitwise_nand_raw(Parser *p)
+{
+    D(p->level++);
+    if (p->error_indicator) {
+        D(p->level--);
+        return NULL;
+    }
+    expr_ty _res = NULL;
+    int _mark = p->mark;
+    if (p->mark == p->fill && _PyPegen_fill_token(p) < 0) {
+        p->error_indicator = 1;
+        D(p->level--);
+        return NULL;
+    }
+    int _start_lineno = p->tokens[_mark]->lineno;
+    UNUSED(_start_lineno); // Only used by EXTRA macro
+    int _start_col_offset = p->tokens[_mark]->col_offset;
+    UNUSED(_start_col_offset); // Only used by EXTRA macro
+    { // bitwise_nand '!&' bitwise_xor
+        if (p->error_indicator) {
+            D(p->level--);
+            return NULL;
+        }
+        D(fprintf(stderr, "%*c> bitwise_nand[%d-%d]: %s\n", p->level, ' ', _mark, p->mark, "bitwise_nand '!&' bitwise_xor"));
+        Token * _literal;
+        expr_ty a;
+        expr_ty b;
+        if (
+            (a = bitwise_nand_rule(p))  // bitwise_nand
+            &&
+            (_literal = _PyPegen_expect_token(p, 54))  // token='!&'
+            &&
+            (b = bitwise_xor_rule(p))  // bitwise_xor
+        )
+        {
+            D(fprintf(stderr, "%*c+ bitwise_nand[%d-%d]: %s succeeded!\n", p->level, ' ', _mark, p->mark, "bitwise_nand '!&' bitwise_xor"));
+            Token *_token = _PyPegen_get_last_nonnwhitespace_token(p);
+            if (_token == NULL) {
+                D(p->level--);
+                return NULL;
+            }
+            int _end_lineno = _token->end_lineno;
+            UNUSED(_end_lineno); // Only used by EXTRA macro
+            int _end_col_offset = _token->end_col_offset;
+            UNUSED(_end_col_offset); // Only used by EXTRA macro
+            _res = _Py_BinOp ( a , BitNand , b , EXTRA );
+            if (_res == NULL && PyErr_Occurred()) {
+                p->error_indicator = 1;
+                D(p->level--);
+                return NULL;
+            }
+            goto done;
+        }
+        p->mark = _mark;
+        D(fprintf(stderr, "%*c%s bitwise_nand[%d-%d]: %s failed!\n", p->level, ' ',
+                  p->error_indicator ? "ERROR!" : "-", _mark, p->mark, "bitwise_nand '!&' bitwise_xor"));
     }
     { // bitwise_xor
         if (p->error_indicator) {
             D(p->level--);
             return NULL;
         }
-        D(fprintf(stderr, "%*c> bitwise_or[%d-%d]: %s\n", p->level, ' ', _mark, p->mark, "bitwise_xor"));
+        D(fprintf(stderr, "%*c> bitwise_nand[%d-%d]: %s\n", p->level, ' ', _mark, p->mark, "bitwise_xor"));
         expr_ty bitwise_xor_var;
         if (
             (bitwise_xor_var = bitwise_xor_rule(p))  // bitwise_xor
         )
         {
-            D(fprintf(stderr, "%*c+ bitwise_or[%d-%d]: %s succeeded!\n", p->level, ' ', _mark, p->mark, "bitwise_xor"));
+            D(fprintf(stderr, "%*c+ bitwise_nand[%d-%d]: %s succeeded!\n", p->level, ' ', _mark, p->mark, "bitwise_xor"));
             _res = bitwise_xor_var;
             goto done;
         }
         p->mark = _mark;
-        D(fprintf(stderr, "%*c%s bitwise_or[%d-%d]: %s failed!\n", p->level, ' ',
+        D(fprintf(stderr, "%*c%s bitwise_nand[%d-%d]: %s failed!\n", p->level, ' ',
                   p->error_indicator ? "ERROR!" : "-", _mark, p->mark, "bitwise_xor"));
     }
     _res = NULL;

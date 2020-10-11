@@ -5637,7 +5637,9 @@ static PyNumberMethods long_as_number = {
     0,                          /* nb_inplace_floor_divide */
     0,                          /* nb_inplace_true_divide */
     long_long,                  /* nb_index */
-    long_nand,                   /* nb_nand */
+    0,                          /* nb_matrix_multiply */
+    0,                          /* nb_inplace_matrix_multiply */
+    long_nand,                  /* nb_nand */
     0                           /* nb_inplace_nand */
 };
 
