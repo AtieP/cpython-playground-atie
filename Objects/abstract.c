@@ -1078,7 +1078,7 @@ INPLACE_BINOP(PyNumber_InPlaceLshift, nb_inplace_lshift, nb_lshift, "<<=")
 INPLACE_BINOP(PyNumber_InPlaceRshift, nb_inplace_rshift, nb_rshift, ">>=")
 INPLACE_BINOP(PyNumber_InPlaceSubtract, nb_inplace_subtract, nb_subtract, "-=")
 INPLACE_BINOP(PyNumber_InMatrixMultiply, nb_inplace_matrix_multiply, nb_matrix_multiply, "@=")
-INPLACE_BINOP(PyNumber_InPlaceNand, nb_inplace_nand, nb_nand, "!&")
+INPLACE_BINOP(PyNumber_InPlaceNand, nb_inplace_nand, nb_nand, "!&=")
 
 PyObject *
 PyNumber_InPlaceFloorDivide(PyObject *v, PyObject *w)
